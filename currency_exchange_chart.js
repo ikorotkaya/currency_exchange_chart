@@ -1,19 +1,30 @@
 const ctx = document.getElementById('myChart');
 
-const labels = [1, 2, 3, 4, 5, 6, 50]
+const labels = Array.from({ length: 365 }, (_, i) => i + 1);
+
+const getRandomArray = () => {
+  const result = [];
+
+  for (let i = 0; i < labels.length; i++) {
+    result[i] = Math.floor(Math.random() * 100);
+  }
+  return result;
+}
+
+let randomNumbersArray = getRandomArray();
+
 const data = {
   labels: labels,
   datasets: [
     {
       label: 'Dataset 1',
-      data: [1, 2, 3, 4, 5, 6, 100],
+      data: randomNumbersArray,
       borderColor: "red",
     }
   ]
 };
 
-
-new Chart(ctx, {
+const currencyExchangeChart = new Chart(ctx, {
   type: 'line',
   data: data,
   options: {
@@ -44,3 +55,20 @@ const $btn = document.createElement("btn");
 $btn.classList.add("change-chart-line");
 $btn.innerHTML = "Randomize";
 $container.appendChild($btn);
+
+
+function updateConfigByMutating(chart) {
+  randomNumbersArray = getRandomArray();
+  chart.data.datasets = [
+    {
+      label: 'Dataset 1',
+      data: randomNumbersArray,
+      borderColor: "red",
+    }
+  ];
+  chart.update();
+}
+
+$btn.addEventListener("click", () => {
+  updateConfigByMutating(currencyExchangeChart);
+})
