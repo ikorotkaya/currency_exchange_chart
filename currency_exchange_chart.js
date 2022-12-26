@@ -1,6 +1,20 @@
 const ctx = document.getElementById('myChart');
 
-const labels = Array.from({ length: 365 }, (_, i) => i + 1);
+// const labels = Array.from({ length: 365 }, (_, i) => i + 1);
+
+const getTimeStamps = () => {
+  const result = [];
+
+  for (let i = 0; i < 365; i++) {
+    let date = new Date("2022-01-01");
+    date.setDate(date.getDate() + i);
+    result[i] = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
+  }
+  return result;
+}
+
+const labels = getTimeStamps();
+
 
 const getRandomArray = () => {
   const result = [];
@@ -11,14 +25,25 @@ const getRandomArray = () => {
   return result;
 }
 
-let randomNumbersArray = getRandomArray();
+
+const dataArray = () => {
+  const result = [];
+  let randomNumbersArray = getRandomArray();
+
+  for (let i = 0; i < 365; i++) {
+    const point = {};
+    point.x = labels[i];
+    point.y = randomNumbersArray[i];
+    result.push(point);
+  }
+
+  return result
+}
 
 const data = {
-  labels: labels,
   datasets: [
     {
-      label: 'Dataset 1',
-      data: randomNumbersArray,
+      data: dataArray(),
       borderColor: "red",
     }
   ]
@@ -40,7 +65,7 @@ const currencyExchangeChart = new Chart(ctx, {
     },
     scales: {
       x: {
-        type: 'linear',
+        type: 'timeseries',
         title: {
           display: true,
           text: 'Date'
@@ -58,11 +83,10 @@ $container.appendChild($btn);
 
 
 function updateConfigByMutating(chart) {
-  randomNumbersArray = getRandomArray();
+  chart.options.plugins.title.text = 'new title';
   chart.data.datasets = [
     {
-      label: 'Dataset 1',
-      data: randomNumbersArray,
+      data: dataArray(),
       borderColor: "red",
     }
   ];
