@@ -39,3 +39,8 @@ new Chart(ctx, {
   },
 });
 
+const $container = document.querySelector(".chart-container");
+const $btn = document.createElement("btn");
+$btn.classList.add("change-chart-line");
+$btn.innerHTML = "Randomize";
+$container.appendChild($btn);
