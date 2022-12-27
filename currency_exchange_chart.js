@@ -1,12 +1,12 @@
 const ctx = document.getElementById('myChart');
 
-// const labels = Array.from({ length: 365 }, (_, i) => i + 1);
+// Get timeStamps for 2021 year
 
 const getTimeStamps = () => {
   const result = [];
 
   for (let i = 0; i < 365; i++) {
-    let date = new Date("2022-01-01");
+    let date = new Date("2021-01-01");
     date.setDate(date.getDate() + i);
     result[i] = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
   }
@@ -15,84 +15,99 @@ const getTimeStamps = () => {
 
 const labels = getTimeStamps();
 
+// Retrieve USD-EUR currency via a /timeseries endpoint via async/await
 
-const getRandomArray = () => {
-  const result = [];
+async function fetchCurrencyValues() {
+  var myHeaders = new Headers();
+  myHeaders.append("apikey", "twJXKSiqC9VEUg7WcTotNtEv4vLoySWf");
 
-  for (let i = 0; i < labels.length; i++) {
-    result[i] = Math.floor(Math.random() * 100);
+  var requestOptions = {
+    method: 'GET',
+    redirect: 'follow',
+    headers: myHeaders,
+    base: 'EUR',
+    symbols: 'USD'
+  };
+
+  const url = "https://api.apilayer.com/exchangerates_data/timeseries?start_date=2021-01-01&end_date=2021-12-31";
+  try {
+    const response = await fetch(url, requestOptions)
+    const obj = await response.json();
+    return obj
+
+  } catch (error) {
+    console.log(error);
   }
-  return result;
+
 }
 
+(async () => {
+  const exchangeRates = await fetchCurrencyValues();
 
-const dataArray = () => {
-  const result = [];
-  let randomNumbersArray = getRandomArray();
+  const dailyRates = exchangeRates.rates;
 
-  for (let i = 0; i < 365; i++) {
-    const point = {};
-    point.x = labels[i];
-    point.y = randomNumbersArray[i];
-    result.push(point);
-  }
+  const getCurrencyArray = () => {
+    const result = [];
 
-  return result
-}
-
-const data = {
-  datasets: [
-    {
-      data: dataArray(),
-      borderColor: "red",
+    for (let i = 0; i < labels.length; i++) {
+      result[i] = dailyRates[labels[i]]["USD"];
     }
-  ]
-};
+    return result
+  }
 
-const currencyExchangeChart = new Chart(ctx, {
-  type: 'line',
-  data: data,
-  options: {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: 'Currency Exchange'
+  const currencyArray = getCurrencyArray();
+
+  const getChartDataSet = () => {
+    const result = [];
+
+    for (let i = 0; i < 365; i++) {
+      const point = {};
+      point.x = labels[i];
+      point.y = currencyArray[i];
+      result.push(point);
+    }
+    return result
+  }
+
+  const chartDataSet = getChartDataSet();
+
+  // Chart data
+
+  const data = {
+    datasets: [
+      {
+        data: chartDataSet,
+        borderColor: "red",
       }
-    },
-    scales: {
-      x: {
-        type: 'timeseries',
+    ]
+  };
+
+  // New Chart 
+
+  const currencyExchangeChart = new Chart(ctx, {
+    type: 'line',
+    data: data,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
         title: {
           display: true,
-          text: 'Date'
+          text: 'Currency Exchange'
         }
-      }
+      },
+      scales: {
+        x: {
+          type: 'timeseries',
+          title: {
+            display: true,
+            text: 'Date'
+          }
+        }
+      },
     },
-  },
-});
+  });
 
-const $container = document.querySelector(".chart-container");
-const $btn = document.createElement("btn");
-$btn.classList.add("change-chart-line");
-$btn.innerHTML = "Randomize";
-$container.appendChild($btn);
-
-
-function updateConfigByMutating(chart) {
-  chart.options.plugins.title.text = 'new title';
-  chart.data.datasets = [
-    {
-      data: dataArray(),
-      borderColor: "red",
-    }
-  ];
-  chart.update();
-}
-
-$btn.addEventListener("click", () => {
-  updateConfigByMutating(currencyExchangeChart);
-})
+})()
