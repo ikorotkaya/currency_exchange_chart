@@ -50,17 +50,18 @@ async function fetchCurrencyValues() {
   $customSelectMenu.classList.add("currency-options");
   $container.appendChild($customSelectMenu);
 
-  const createSelectForm = (optionValues, defaultValue) => {
+  const createSelectForm = ({ options, defaultOption, jsClass }) => {
     const $selectFrom = document.createElement("select");
     $selectFrom.classList.add("select-options");
+    $selectFrom.classList.add(jsClass);
     $customSelectMenu.appendChild($selectFrom);
 
-    for (let i = 0; i < optionValues.length; i++) {
+    for (let i = 0; i < options.length; i++) {
       const $option = document.createElement("option");
-      $option.innerHTML = optionValues[i];
-      $option.value = optionValues[i];
+      $option.innerHTML = options[i];
+      $option.value = options[i];
 
-      if (optionValues[i] === defaultValue) {
+      if (options[i] === defaultOption) {
         $option.selected = true;
       }
 
@@ -71,10 +72,17 @@ async function fetchCurrencyValues() {
   let currentCurrencyFrom = "EUR";
   let currentCurrencyTo = "USD";
 
-  const optionValueOne = ["EUR", "USD", "GBP"];
-  const optionValueTwo = ["EUR", "USD", "GBP"];
-  createSelectForm(optionValueOne, currentCurrencyFrom);
-  createSelectForm(optionValueTwo, currentCurrencyTo);
+  createSelectForm({
+    options: ["EUR", "USD", "GBP"],
+    defaultOption: currentCurrencyFrom,
+    jsClass: "js-currency-from"
+  });
+
+  createSelectForm({
+    options: ["EUR", "USD", "GBP"],
+    defaultOption: currentCurrencyTo,
+    jsClass: "js-currency-to"
+  });
 
   const exchangeRates = await fetchCurrencyValues();
 
