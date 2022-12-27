@@ -72,21 +72,23 @@ async function fetchCurrencyValues() {
   let currentCurrencyFrom = "EUR";
   let currentCurrencyTo = "USD";
 
+  const exchangeRates = await fetchCurrencyValues();
+
+  const dailyRates = exchangeRates.rates;
+
+  const currencyList = Object.keys(dailyRates[labels[0]]);
+
   createSelectForm({
-    options: ["EUR", "USD", "GBP"],
+    options: currencyList,
     defaultOption: currentCurrencyFrom,
     jsClass: "js-currency-from"
   });
 
   createSelectForm({
-    options: ["EUR", "USD", "GBP"],
+    options: currencyList,
     defaultOption: currentCurrencyTo,
     jsClass: "js-currency-to"
   });
-
-  const exchangeRates = await fetchCurrencyValues();
-
-  const dailyRates = exchangeRates.rates;
 
   const getCurrencyArray = (currencyFrom, currencyTo) => {
     const result = [];
