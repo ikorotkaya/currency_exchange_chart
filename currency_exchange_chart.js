@@ -97,10 +97,9 @@ async function fetchCurrencyValues() {
     return result;
   }
 
-  const currencyArray = getCurrencyArray(currentCurrencyFrom, currentCurrencyTo);
-
   const getChartDataSet = () => {
     const result = [];
+    const currencyArray = getCurrencyArray(currentCurrencyFrom, currentCurrencyTo);
 
     for (let i = 0; i < 365; i++) {
       const point = {};
@@ -118,6 +117,7 @@ async function fetchCurrencyValues() {
   const data = {
     datasets: [
       {
+        label: `from ${currentCurrencyFrom} to ${currentCurrencyTo}`,
         data: chartDataSet,
         borderColor: "red",
       }
@@ -137,7 +137,7 @@ async function fetchCurrencyValues() {
         },
         title: {
           display: true,
-          text: 'Currency Exchange'
+          text: `Currency Exchange from ${currentCurrencyFrom} to ${currentCurrencyTo}`
         }
       },
       scales: {
@@ -152,6 +152,30 @@ async function fetchCurrencyValues() {
     },
   });
 
+  function updateConfigByMutating(chart) {
+    chart.options.plugins.title.text = `Currency Exchange from ${currentCurrencyFrom} to ${currentCurrencyTo}`;
+    chart.data.datasets = [
+      {
+        label: `from ${currentCurrencyFrom} to ${currentCurrencyTo}`,
+        data: getChartDataSet(),
+        borderColor: "red",
+      }
+    ];
+    chart.update();
+  }
 
+  const $selectElementFrom = document.querySelector('.js-currency-from');
+  const $selectElementTo = document.querySelector('.js-currency-to');
+
+  $selectElementFrom.addEventListener("change", function () {
+    currentCurrencyFrom = this.value;
+    updateConfigByMutating(currencyExchangeChart);
+  })
+
+  $selectElementTo.addEventListener("change", function () {
+    currentCurrencyTo = this.value;
+    console.log(this.value);
+    updateConfigByMutating(currencyExchangeChart);
+  })
 
 })()
