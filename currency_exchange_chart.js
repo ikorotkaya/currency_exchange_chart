@@ -1,5 +1,6 @@
 const ctx = document.getElementById('myChart');
 
+
 // Get timeStamps for 2021 year
 
 const getTimeStamps = () => {
@@ -32,8 +33,8 @@ async function fetchCurrencyValues() {
   const url = "https://api.apilayer.com/exchangerates_data/timeseries?start_date=2021-01-01&end_date=2021-12-31";
   try {
     const response = await fetch(url, requestOptions)
-    const obj = await response.json();
-    return obj
+    const jsondata = await response.json();
+    return jsondata
 
   } catch (error) {
     console.log(error);
@@ -42,20 +43,53 @@ async function fetchCurrencyValues() {
 }
 
 (async () => {
+
+  const $container = document.querySelector(".chart-container");
+
+  const $customSelectMenu = document.createElement("div");
+  $customSelectMenu.classList.add("currency-options");
+  $container.appendChild($customSelectMenu);
+
+  const createSelectForm = (optionValues, defaultValue) => {
+    const $selectFrom = document.createElement("select");
+    $selectFrom.classList.add("select-options");
+    $customSelectMenu.appendChild($selectFrom);
+
+    for (let i = 0; i < optionValues.length; i++) {
+      const $option = document.createElement("option");
+      $option.innerHTML = optionValues[i];
+      $option.value = optionValues[i];
+
+      if (optionValues[i] === defaultValue) {
+        $option.selected = true;
+      }
+
+      $selectFrom.appendChild($option);
+    }
+  }
+
+  let currentCurrencyFrom = "EUR";
+  let currentCurrencyTo = "USD";
+
+  const optionValueOne = ["EUR", "USD", "GBP"];
+  const optionValueTwo = ["EUR", "USD", "GBP"];
+  createSelectForm(optionValueOne, currentCurrencyFrom);
+  createSelectForm(optionValueTwo, currentCurrencyTo);
+
   const exchangeRates = await fetchCurrencyValues();
 
   const dailyRates = exchangeRates.rates;
 
-  const getCurrencyArray = () => {
+  const getCurrencyArray = (currencyFrom, currencyTo) => {
     const result = [];
 
     for (let i = 0; i < labels.length; i++) {
-      result[i] = dailyRates[labels[i]]["USD"];
+      result[i] = dailyRates[labels[i]][currencyTo] / dailyRates[labels[i]][currencyFrom];
     }
-    return result
+    return result;
   }
 
-  const currencyArray = getCurrencyArray();
+  const currencyArray = getCurrencyArray(currentCurrencyFrom, currentCurrencyTo);
 
   const getChartDataSet = () => {
     const result = [];
@@ -109,5 +143,7 @@ async function fetchCurrencyValues() {
       },
     },
   });
+
+
 
 })()
