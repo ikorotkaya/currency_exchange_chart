@@ -5,7 +5,10 @@
 
 .chart-container {
   width: 1000px;
-
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .change-chart-line {
@@ -22,4 +25,10 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
+}
+
+img {
+ width: 100px; 
+ height: 100px;
+
 }

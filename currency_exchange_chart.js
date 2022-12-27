@@ -32,8 +32,19 @@ async function fetchCurrencyValues() {
 
   const url = "https://api.apilayer.com/exchangerates_data/timeseries?start_date=2021-01-01&end_date=2021-12-31";
   try {
+    const $container = document.querySelector(".chart-container")
+
+    const $img = document.createElement("img");
+    $img.src = "spinning_image.gif";
+    $img.classList.add("spinner-wait");
+    $container.prepend($img);
+
     const response = await fetch(url, requestOptions)
+
     const jsondata = await response.json();
+
+    document.querySelector("img").remove();
+
     return jsondata
 
   } catch (error) {
