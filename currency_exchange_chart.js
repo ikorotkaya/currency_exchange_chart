@@ -158,7 +158,6 @@ async function fetchCurrencyValues() {
           type: 'timeseries',
           title: {
             display: true,
-            text: 'Date'
           }
         }
       },
